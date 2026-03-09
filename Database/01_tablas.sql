@@ -1,32 +1,28 @@
--- ============================================================
--- 01_tablas.sql
--- Crea el schema y la tabla principal de inventario
--- ============================================================
 
-CREATE DATABASE IF NOT EXISTS inventario
+CREATE DATABASE IF NOT EXISTS INVENTARIO_DB
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
-USE inventario;
+USE INVENTARIO_DB;
 
-CREATE TABLE IF NOT EXISTS categorias (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    nombre      VARCHAR(100) NOT NULL UNIQUE,
-    descripcion TEXT,
-    creado_en   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS CATEGORIAS (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    NOMBRE VARCHAR(100) NOT NULL UNIQUE,
+    DESCRIPCION TEXT NOT NULL,
+    CREATED_AT DATETIME NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS productos (
-    id             INT AUTO_INCREMENT PRIMARY KEY,
-    nombre         VARCHAR(255)   NOT NULL,
-    descripcion    TEXT,
-    precio         DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    stock          INT            NOT NULL DEFAULT 0,
-    categoria_id   INT,
-    sku            VARCHAR(100)   UNIQUE,
-    activo         TINYINT(1)     NOT NULL DEFAULT 1,
-    creado_en      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    CATEGORIA_ID INT,
+    NOMBRE VARCHAR(255) NOT NULL,
+    DESCRIPCION TEXT NOT NULL,
+    PRECIO DECIMAL(10, 2) NOT NULL,
+    STOCK INT NOT NULL,
+    SKU VARCHAR(100) NOT NULL UNIQUE,
+    ACTIVO TINYINT(1) NOT NULL DEFAULT 1,
+    CREATED_AT DATETIME NOT NULL DEFAULT NOW(),
+    UPDATED_AT DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 
     CONSTRAINT fk_categoria
         FOREIGN KEY (categoria_id)
