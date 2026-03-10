@@ -1,43 +1,45 @@
-# 🗃️ Inventory MCP — MySQL · Stored Procedures · Python (uv)
+# Inventory MCP — MySQL · Stored Procedures · Python (uv)
 
 MCP Server en Python que conecta Claude Desktop con un inventario MySQL,
 usando exclusivamente **Stored Procedures** como capa de acceso a datos.
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
-inventory-mcp/
-├── sql/
-│   ├── 01_tablas.sql             # Schema y tablas
-│   └── 02_stored_procedures.sql  # Todos los SPs
-├── server.py                     # MCP Server (llama SPs, nunca SQL directo)
-├── pyproject.toml                # Configuración del proyecto (uv)
-├── .env.example                  # Variables de entorno
-└── README.md
+MCP-DB-Tarea1-IA/
+├── Backend/
+│   └── server.py
+├── Database/
+│   ├── 01_tablas.sql
+│   └── 02_stored_procedures.sql
+├── Docs/
+│   └── Tarea y prueba corta 2.docx
+├── .env
+├── .gitignore
+├── .python-version
+├── LICENSE
+├── pyproject.toml
+├── README.md
+└── uv.lock
 ```
 
 ---
 
-## ⚙️ Instalación con `uv`
+## Instalación con `uv`
 
 ### 1. Instalar uv (si no lo tienes)
 
 ```bash
-# macOS / Linux
-curl -Lsf https://astral.sh/uv/install.sh | sh
-
 # Windows (PowerShell)
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+pip install uv
 ```
 
 ### 2. Crear el entorno virtual e instalar dependencias
 
 ```bash
-cd inventory-mcp
-
-# Crea el venv en .venv/ e instala todo lo de pyproject.toml
+cd MCP-DB-Tarea1-IA
 uv sync
 ```
 
@@ -51,61 +53,42 @@ uv run python server.py
 
 ---
 
-## 🗄️ Configurar la base de datos MySQL
+## Configurar la base de datos MySQL
 
 ### Paso 1 — Crear tablas
 
-```bash
-mysql -u root -p < sql/01_tablas.sql
-```
+* Ejecutar el script en MySQL
 
 ### Paso 2 — Crear Stored Procedures
 
-```bash
-mysql -u root -p < sql/02_stored_procedures.sql
-```
+* Ejecutar el script en MySQL
+
 
 ### Paso 3 — Variables de entorno
 
+> Nota: Crear el documento `.env` en la carpeta `MCP-DB-Tarea1-IA/`
+
 ```bash
-cp .env.example .env
-# Edita .env con tus credenciales reales
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=tu_password_aqui
+DB_NAME=INVENTARIO_DB
 ```
 
 ---
 
-## 🔌 Conectar con Claude Desktop
+## Conectar con Claude Desktop
 
 > **Clave:** Claude Desktop necesita la ruta **absoluta** al ejecutable de Python
-> dentro del venv, no el comando `uv run`. Esto asegura que use exactamente
+> dentro del venv, no el comando `uv run where python`. Esto asegura que use exactamente
 > las dependencias instaladas y evita cualquier problema con el PATH.
 
 Edita el archivo de configuración de Claude Desktop:
 
 | OS | Ruta |
 |---|---|
-| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
-| Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
-
-### macOS / Linux
-
-```json
-{
-  "mcpServers": {
-    "inventory-mcp": {
-      "command": "/RUTA/ABSOLUTA/inventory-mcp/.venv/bin/python",
-      "args": ["/RUTA/ABSOLUTA/inventory-mcp/server.py"],
-      "env": {
-        "DB_HOST": "localhost",
-        "DB_PORT": "3306",
-        "DB_USER": "root",
-        "DB_PASSWORD": "tu_password_aqui",
-        "DB_NAME": "inventario"
-      }
-    }
-  }
-}
-```
+| Windows | `C:\\Users\\...\\TareaQuiz2\\MCP-DB-Tarea1-IA\\.venv\\Scripts\\python.exe` |
 
 ### Windows
 
@@ -120,51 +103,41 @@ Edita el archivo de configuración de Claude Desktop:
         "DB_PORT": "3306",
         "DB_USER": "root",
         "DB_PASSWORD": "tu_password_aqui",
-        "DB_NAME": "inventario"
+        "DB_NAME": "INVENTARIO_DB"
       }
     }
   }
 }
 ```
 
-> Cómo encontrar la ruta exacta del Python en tu venv:
-> ```bash
-> # macOS/Linux
-> uv run which python
->
-> # Windows
-> uv run where python
-> ```
-
-Reinicia Claude Desktop después de editar el archivo.
+Reinicia Claude Desktop con `ps "Claude" | kill` después de editar el archivo.
 
 ---
 
-## 🛠️ Stored Procedures disponibles
+## Stored Procedures disponibles
 
 | SP | Descripción |
 |---|---|
-| `sp_listar_productos` | Lista productos activos, filtrable por categoría |
-| `sp_buscar_producto` | Busca por ID exacto o nombre parcial |
-| `sp_agregar_producto` | Inserta un nuevo producto (crea la categoría si no existe) |
-| `sp_actualizar_producto` | Actualiza solo los campos enviados (IFNULL pattern) |
-| `sp_eliminar_producto` | Soft-delete: marca `activo = 0` sin borrar el registro |
+| `SP_AGREGAR_PRODUCTO` | Inserta un nuevo producto (crea la categoría si no existe) |
+| `SP_LISTAR_PRODUCTOS` | Lista productos activos, filtrable por categoría |
+| `SP_BUSCAR_PRODUCTO` | Busca por ID exacto o nombre parcial |
+| `SP_ACTUALIZAR_PRODUCTO` | Actualiza solo los campos enviados (IFNULL pattern) |
+| `SP_ELIMINAR_PRODUCTO` | Soft-delete: marca `activo = 0` sin borrar el registro |
 
 ---
 
-## 💬 Ejemplos de uso en Claude Desktop
+## Ejemplos de uso en Claude Desktop
 
-```
-"Lista todos los productos de la categoría Electrónica"
-"Agrega un producto: Laptop Dell XPS, precio 1200, stock 10, categoría Electrónica"
-"Actualiza el stock del producto ID 3 a 50 unidades"
-"Busca productos que contengan 'silla' en el nombre"
-"Elimina el producto con ID 7"
-```
+* "Lista todos los productos de la categoría Electrónica"
+* "Agrega un producto: Laptop Dell XPS, precio 1200, stock 10, categoría Electrónica"
+* "Actualiza el stock del producto ID 3 a 50 unidades"
+* "Busca productos que contengan 'silla' en el nombre"
+* "Elimina el producto con ID 7"
+
 
 ---
 
-## 🏗️ Arquitectura por capas
+## Arquitectura por capas
 
 ```
 Claude Desktop
