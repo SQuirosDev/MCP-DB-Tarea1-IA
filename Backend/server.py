@@ -162,10 +162,10 @@ def handle_agregar_producto(args: dict) -> str:
     ])
 
     if not rows:
-        return "❌ No se pudo agregar el producto."
+        return "No se pudo agregar el producto."
     
     producto = serialize_row(rows[0])
-    return f"✅ Producto '{producto['NOMBRE']}' agregado exitosamente con ID {producto['ID']}."
+    return f"Producto '{producto['NOMBRE']}' agregado exitosamente con ID {producto['ID']}."
 
 def handle_actualizar_producto(args: dict) -> str:
     prod_id = args.get("id")
@@ -183,7 +183,7 @@ def handle_actualizar_producto(args: dict) -> str:
     if not rows or rows[0].get("AFECTADOS", 0) == 0:
         return f"No se encontró un producto con ID {prod_id}."
     
-    return f"✅ Producto ID {prod_id} actualizado correctamente."
+    return f"Producto ID {prod_id} actualizado correctamente."
 
 def handle_eliminar_producto(args: dict) -> str:
     prod_id = args["id"]
@@ -193,7 +193,7 @@ def handle_eliminar_producto(args: dict) -> str:
     if not rows or rows[0].get("AFECTADOS", 0) == 0:
         return f"No se encontró un producto con ID {prod_id}."
     
-    return f"🗑️ Producto '{rows[0].get('NOMBRE_ELIMINADO')}' (ID {prod_id}) eliminado del inventario."
+    return f"Producto '{rows[0].get('NOMBRE_ELIMINADO')}' (ID {prod_id}) eliminado del inventario."
 
 # ─── Dispatcher ──────────────────────────────────────────────────────────────
 
@@ -215,9 +215,9 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
     try:
         result = handler(arguments)
     except Error as e:
-        result = f"❌ Error de base de datos: {e}"
+        result = f"Error de base de datos: {e}"
     except Exception as e:
-        result = f"❌ Error inesperado: {e}"
+        result = f"Error inesperado: {e}"
 
     return [types.TextContent(type="text", text=result)]
 
